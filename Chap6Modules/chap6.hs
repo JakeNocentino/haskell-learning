@@ -6,6 +6,10 @@
 -- :m + Data.List Data.Map Data.Set
 import Data.List
 import Data.Char
+import qualified Data.Map as Map
+import qualified Geometry.Sphere as Sphere
+import qualified Geometry.Cuboid as Cuboid
+import qualified Geometry.Cube as Cube
 
 numUniques :: (Eq a) => [a] -> Int
 numUniques = length . nub
@@ -62,4 +66,65 @@ firstTo40 = find (\x -> digitSum x == 40) [1 ..]
 
 firstTo :: Int -> Maybe Int
 firstTo n = find (\x -> digitSum x == n) [1 ..]
+
+-- Association Lists (Dictionaries)
+phoneBook = 
+    [("betty", "555-2938")
+    ,("betty", "342-2492")
+    ,("bonnie", "452-2928")
+    ,("patsy", "493-2928")
+    ,("patsy", "943-2929")
+    ,("patsy", "827-9162")
+    ,("lucille", "205-2921")
+    ,("wendy", "939-8282")
+    ,("penny", "853-2492")
+    ,("penny", "555-2111")
+    ]
+
+findKey :: (Eq k) => k -> [(k, v)] -> v
+findKey key xs = snd . head . filter (\(k, v) -> key == k) $ xs
+-- but this program will crash if the desired key is not in the list.
+-- Hence, we change the type return to Maybe v, and return Nothing or Just v
+findKey' :: (Eq k) => k -> [(k, v)] -> Maybe v
+findKey' key [] = Nothing
+findKey' key ((k, v):xs)
+    | key == k  = Just v
+    | otherwise = findKey' key xs
+-- We can also (should also) use a fold for this type of explicit recursion
+findKey'' :: (Eq k) => k -> [(k, v)] -> Maybe v
+findKey'' key xs = foldr (\(k, v) acc -> if key == k then Just v else acc) Nothing xs
+
+-- It turns out that findKey = lookup (from Data.List)
+-- Data.Map offers many better functions for this type of work, however
+-- Map.fromList turns an association list into a map
+-- whenever using maps, always use functions from Data.Map (lookUp, insert, etc)
+
+-- New Map of previous phoneBook associated list
+phoneBook' :: Map.Map String String
+phoneBook' = Map.fromList $
+    [("betty", "555-2938")
+    ,("bonnie", "452-2928")
+    ,("patsy", "493-2928")
+    ,("lucille", "205-2921")
+    ,("wendy", "939-8282")
+    ,("penny", "853-2492")
+    ]
+
+-- Map.lookup "betty" phoneBook'
+-- let newBook = Map.insert "grace" "341-9021" phoneBook'
+-- Map.size phonebook'
+
+-- used to convert our string of ints at the v to a list of ints
+string2digits :: String -> [Int]
+string2digits = map digitToInt . filter isDigit
+
+-- fromListWith works like fromWith, but instead of discaring duplicate keys, it uses a funciton supplied to it to decide what to do with them
+
+phoneBookToMap :: (Ord k) => [(k, String)] -> Map.Map k String
+phoneBookToMap xs = Map.fromListWith add xs
+    where add number1 number2 = number1 ++ ", " ++ number2
+
+phoneBookToMap' :: (Ord k) => [(k, a)] -> Map.Map k [a]
+phoneBookToMap' xs = Map.fromListWith (++) $ map (\(k, v) -> (k, [v])) xs
+
 
