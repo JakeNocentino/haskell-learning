@@ -67,11 +67,50 @@ flavor' :: Person' -> String
 flavor' (Person' _ _ _ _ _ flavor') = flavor'
 
 -- Hold up... there is a MUCH BETTER way to write all of this!
--- USe "record syntax" to clean up the above code
+-- Uee "record syntax" to clean up the above code
+
+-- data type Person
 data Person = Person { firstName :: String
                      , lastName :: String
                      , age :: Int
                      , height :: Float
                      , phoneNumber :: String
                      , flavor :: String } deriving (Show)
+
+-- data type Car
+-- note that this data type is not worth paranetizing, because it will almost always be a String String Int and nothing more
+data Car = Car { company :: String
+               , model :: String
+               , year :: Int
+               } deriving (Show)
+
+tellCar :: Car -> String
+tellCar (Car {company = c, model = m, year = y}) = 
+    "This " ++ c ++ " " ++ m ++ " was made in " ++ show y
+-- when using record syntax, you can do this:
+-- Car {company = "Ford", model = "Mustang", year = 1967}
+-- and the fields don't have to be in order
+
+-- Type Parameters and Typr Constructors
+data IntMaybe = INothing | IJust Int
+data StringMaybe = SNothing | SJust String
+data ShapeMaybe = ShNothing | ShJust Shape
+
+-- type parametizing is useful when having a container of stuff and not caring what that stuff is (like tempaltes in C++)
+
+-- Haskell convention - NEVER add type class constraints in data declarations
+
+-- implementing a 3D Vector type - parameterized type bc it can support Int, Integer, Double, etc
+data Vector a = Vector a a a deriving (Show)
+
+vplus :: (Num a) => Vector a -> Vector a -> Vector a
+(Vector i j k) `vplus` (Vector l m n) = Vector (i+l) (j+m) (k+n)
+
+dotProd :: (Num a) => Vector a -> Vector a -> a
+(Vector i j k) `dotProd` (Vector l m n) = i*l + j*m + k*n
+
+vmult :: (Num a) => Vector a -> a -> Vector a
+(Vector i j k) `vmult` m = Vector (i*m) (j*m) (k*m)
+
+
 
