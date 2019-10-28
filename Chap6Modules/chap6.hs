@@ -118,7 +118,7 @@ phoneBook' = Map.fromList $
 string2digits :: String -> [Int]
 string2digits = map digitToInt . filter isDigit
 
--- fromListWith works like fromWith, but instead of discaring duplicate keys, it uses a funciton supplied to it to decide what to do with them
+-- fromListWith works like fromList, but instead of discaring duplicate keys, it uses a funciton supplied to it to decide what to do with them
 
 phoneBookToMap :: (Ord k) => [(k, String)] -> Map.Map k String
 phoneBookToMap xs = Map.fromListWith add xs
